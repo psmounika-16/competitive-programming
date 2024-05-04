@@ -1,0 +1,49 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.isWord=False
+        self.count=-1
+
+class WordFilter:   
+    def __init__(self, words:List[str]):
+        self.root = TrieNode()
+        self.ans=-1
+        count=0
+        for i in words:
+            self.addWord(i,count)
+            count+=1
+
+    def addWord(self,word:str,count)->None:
+        node=self.root
+        for c in word:
+            node=node.children.setdefault(c,TrieNode())
+        node.isWord=True
+        node.count=count
+
+    def _dfs(self,pref,suff,node,s):
+        if(node.isWord and s[-1]==suff[-1]):
+            if(s.endswith(suff)and s.startswith(pref)):
+                self.ans=max(self.ans,node.count)
+        for c, child in node.children.items():
+            self._dfs(pref,suff,child,s+c)
+
+    def f(self,pref:str,suff:str)->int:
+        self.ans=-1
+        index=-1
+        node=self.root
+        tmpstr=""
+        for i in pref:
+            child=node.children.get(i,None)
+            if child:
+                tmpstr=tmpstr+i
+                node=node.children[i]
+            else:
+                return-1
+        if node.isWord and tmpstr.endswith(suff):
+            self.ans=node.count
+        for c,child in node.children.items():
+            self._dfs(pref,suff,child,tmpstr+c)
+
+        return self.ans
+        
+
